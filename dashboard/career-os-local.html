@@ -198,45 +198,28 @@ body>*:not(.ambient){position:relative;z-index:1}
 
   <div class="ctrl-panel">
     <div class="ctrl-row">
-      <span class="ctrl-lbl"><i data-lucide="map-pin" style="width:11px;height:11px"></i> Estado</span>
-      <div class="ctrl-chips" id="geo-state-chips">
-        <button class="c-chip active" onclick="setGeo(this,'')">Todos</button>
-        <button class="c-chip" onclick="setGeo(this,'remoto')">🌐 Remoto</button>
-        <button class="c-chip" onclick="setGeo(this,'rj')">RJ</button>
-        <button class="c-chip" onclick="setGeo(this,'sp')">SP</button>
-      </div>
-    </div>
-    <div class="ctrl-row">
       <span class="ctrl-lbl"><i data-lucide="briefcase" style="width:11px;height:11px"></i> Cargo</span>
       <div class="ctrl-chips" id="role-chips"></div>
+    </div>
+    <div class="ctrl-row">
+      <span class="ctrl-lbl"><i data-lucide="map-pin" style="width:11px;height:11px"></i> Local</span>
+      <div class="ctrl-chips" id="geo-state-chips">
+        <button class="c-chip" onclick="setGeo(this,'rio-presencial')">Presencial Rio</button>
+        <button class="c-chip" onclick="setGeo(this,'remoto-fora-rio')">Remoto fora do Rio</button>
+      </div>
     </div>
     <div class="ctrl-row ctrl-row-bottom">
       <span class="ctrl-lbl">Período</span>
       <div class="ctrl-chips" id="period-chips">
-        <button class="c-chip" onclick="setPeriod(this,'r86400')">24h</button>
-        <button class="c-chip active" onclick="setPeriod(this,'')">Livre</button>
-      </div>
-      <div class="ctrl-sep"></div>
-      <span class="ctrl-lbl">Modalidade</span>
-      <div class="ctrl-chips" id="wt-chips">
-        <button class="c-chip active" onclick="setWT(this,'')">Todos</button>
-        <button class="c-chip" onclick="setWT(this,'2')">Remoto</button>
-        <button class="c-chip" onclick="setWT(this,'1')">Presencial</button>
-        <button class="c-chip" onclick="setWT(this,'3')">Híbrido</button>
-      </div>
-      <div class="ctrl-sep"></div>
-      <span class="ctrl-lbl">Tipo</span>
-      <div class="ctrl-chips" id="jt-chips">
-        <button class="c-chip active" onclick="setJT(this,'')">Todos</button>
-        <button class="c-chip" onclick="setJT(this,'F')">CLT</button>
-        <button class="c-chip" onclick="setJT(this,'C')">PJ</button>
+        <button class="c-chip active" onclick="setPeriod(this,'r86400')">24h</button>
+        <button class="c-chip" onclick="setPeriod(this,'r3600')">1h</button>
       </div>
     </div>
   </div>
 
   <div class="card card-accent">
-    <div class="card-title">Construção da busca</div>
-    <div id="build-hint" style="font-size:12px;color:var(--text3);line-height:1.6">Selecione cargo e local para montar a query.</div>
+    <div class="card-title">Busca</div>
+    <div id="build-hint" style="font-size:12px;color:var(--text3);line-height:1.6">Selecione um filtro de local para montar a busca.</div>
     <div id="build-query" style="font-family:var(--mono);font-size:12px;color:var(--text);margin-top:8px;display:none"></div>
   </div>
 </section>
@@ -356,9 +339,7 @@ body>*:not(.ambient){position:relative;z-index:1}
 
 /* ─── STATE ─── */
 let geoState='';
-let period='';
-let wt='';
-let jt='';
+let period='r86400';
 let roles=new Set();
 const ROLE_PRESETS=['Head de Marketing','Gerente de Marketing','Diretor de Arte','Creative Director','Product Manager','Product Owner','Product Designer','UX Designer','UI Designer','PMM','AI Product Manager','Growth PM','Content Manager','Social Media','Brand Manager'];
 let emailDB=JSON.parse(localStorage.getItem('cos_emails')||'null')||[
@@ -410,8 +391,6 @@ function setGeo(btn,state){
   renderBuild();
 }
 function setPeriod(btn,val){ period=val; document.querySelectorAll('#period-chips .c-chip').forEach(c=>c.classList.remove('active')); btn.classList.add('active'); renderBuild(); }
-function setWT(btn,val){ wt=val; document.querySelectorAll('#wt-chips .c-chip').forEach(c=>c.classList.remove('active')); btn.classList.add('active'); renderBuild(); }
-function setJT(btn,val){ jt=val; document.querySelectorAll('#jt-chips .c-chip').forEach(c=>c.classList.remove('active')); btn.classList.add('active'); renderBuild(); }
 function toggleRole(name,btn){
   if(roles.has(name)){ roles.delete(name); btn.classList.remove('active'); }
   else { roles.add(name); btn.classList.add('active'); }
@@ -424,13 +403,21 @@ function renderRoles(){
 function buildQuery(){
   const parts=[...roles];
   const q=parts.length ? parts.join(' OR ') : '';
-  const loc=geoState==='remoto'?'Brasil':geoState==='sp'?'São Paulo':geoState==='rj'?'Rio de Janeiro':'Brasil';
-  const geoId=geoState==='sp'?'100446943':geoState==='rj'?'102676203':'106057199';
-  const wtParam=geoState==='remoto'?'2':wt;
+  let location='';
+  let geoId='106057199';
+  let filters='';
+  if(geoState==='rio-presencial'){
+    location='Rio de Janeiro';
+    geoId='102676203';
+    filters='&f_WT=1';
+  } else if(geoState==='remoto-fora-rio'){
+    location='Brasil';
+    filters='&f_WT=2';
+  }
+  const loc=location || 'Brasil';
   let url='https://www.linkedin.com/jobs/search/?keywords='+encodeURIComponent(q)+'&location='+encodeURIComponent(loc)+'&geoId='+geoId+'&refresh=true';
   if(period) url+='&f_TPR='+period;
-  if(wtParam) url+='&f_WT='+wtParam;
-  if(jt) url+='&f_JT='+jt;
+  url+=filters;
   return {q,url};
 }
 function renderBuild(){
