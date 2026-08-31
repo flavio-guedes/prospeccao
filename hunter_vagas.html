@@ -40,8 +40,22 @@
   .grid{display:grid;gap:14px}
   .grid-2{grid-template-columns:repeat(2,1fr)}
   .grid-3{grid-template-columns:repeat(3,1fr)}
-  @media(max-width:860px){.kpis,.grid-2,.grid-3{grid-template-columns:1fr}.kpis{grid-template-columns:repeat(2,1fr)}}
-  table{width:100%;border-collapse:collapse}
+  @media(max-width:860px){
+    .kpis,.grid-2,.grid-3{grid-template-columns:1fr}
+    .kpis{grid-template-columns:repeat(2,1fr)}
+    th,td{padding:10px 6px;font-size:12px}
+    .loop{font-size:11px;padding:10px}
+    header{gap:10px}
+    h1{font-size:18px}
+  }
+  @media(max-width:480px){
+    .kpis{grid-template-columns:1fr 1fr}
+    th,td{padding:8px 4px;font-size:11px}
+    .card{padding:10px}
+    body{padding:16px}
+  }
+  .table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+  table{width:100%;border-collapse:collapse;min-width:640px}
   th,td{text-align:left;padding:10px 8px;border-bottom:1px solid var(--line);vertical-align:top}
   th{color:var(--muted);font-weight:500;font-size:12px;text-transform:uppercase;letter-spacing:.5px}
   td{font-size:13px;line-height:1.45}
@@ -74,10 +88,12 @@
   <div class="section">
     <div class="section-title">Oportunidades mapeadas</div>
     <div class="card">
-      <table>
-        <thead><tr><th>Cargo</th><th>Empresa</th><th>Plataforma</th><th>Faixa</th><th>Modalidade</th><th>Score</th><th>Classificação</th></tr></thead>
-        <tbody id="tb-mapped"><tr><td colspan="7" class="small">Nenhuma oportunidade registrada.</td></tr></tbody>
-      </table>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Cargo</th><th>Empresa</th><th>Plataforma</th><th>Faixa</th><th>Modalidade</th><th>Score</th><th>Classificação</th></tr></thead>
+          <tbody id="tb-mapped"><tr><td colspan="7" class="small">Nenhuma oportunidade registrada.</td></tr></tbody>
+        </table>
+      </div>
     </div>
   </div>
 
@@ -85,19 +101,23 @@
     <div>
       <div class="section-title">Aplicações em fila</div>
       <div class="card">
-        <table>
-          <thead><tr><th>Cargo</th><th>Empresa</th><th>Plataforma</th><th>Prioridade</th><th>Esforço</th><th>Próxima ação</th></tr></thead>
-          <tbody id="tb-queue"><tr><td colspan="6" class="small">Sem entradas na fila.</td></tr></tbody>
-        </table>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Cargo</th><th>Empresa</th><th>Plataforma</th><th>Prioridade</th><th>Esforço</th><th>Próxima ação</th></tr></thead>
+            <tbody id="tb-queue"><tr><td colspan="6" class="small">Sem entradas na fila.</td></tr></tbody>
+          </table>
+        </div>
       </div>
     </div>
     <div>
       <div class="section-title">Bloqueios e limitações</div>
       <div class="card">
-        <table>
-          <thead><tr><th>Plataforma</th><th>Vaga</th><th>Etapa</th><th>Bloqueio</th><th>Impacto</th><th>Alternativa</th></tr></thead>
-          <tbody id="tb-blocked"><tr><td colspan="6" class="small">Nenhum bloqueio registrado.</td></tr></tbody>
-        </table>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Plataforma</th><th>Vaga</th><th>Etapa</th><th>Bloqueio</th><th>Impacto</th><th>Alternativa</th></tr></thead>
+            <tbody id="tb-blocked"><tr><td colspan="6" class="small">Nenhum bloqueio registrado.</td></tr></tbody>
+          </table>
+        </div>
       </div>
     </div>
   </div>
@@ -106,19 +126,23 @@
     <div>
       <div class="section-title">Informação pendente</div>
       <div class="card">
-        <table>
-          <thead><tr><th>Vaga / Tema</th><th>O que falta</th><th>Impacto</th><th>Ação necessária</th></tr></thead>
-          <tbody id="tb-pending"><tr><td colspan="4" class="small">Sem pendências.</td></tr></tbody>
-        </table>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Vaga / Tema</th><th>O que falta</th><th>Impacto</th><th>Ação necessária</th></tr></thead>
+            <tbody id="tb-pending"><tr><td colspan="4" class="small">Sem pendências.</td></tr></tbody>
+          </table>
+        </div>
       </div>
     </div>
     <div>
       <div class="section-title">Concluídas</div>
       <div class="card">
-        <table>
-          <thead><tr><th>Cargo</th><th>Empresa</th><th>Plataforma</th><th>Faixa</th><th>Data</th><th>Resultado</th></tr></thead>
-          <tbody id="tb-done"><tr><td colspan="6" class="small">Nenhuma candidatura concluída.</td></tr></tbody>
-        </table>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Cargo</th><th>Empresa</th><th>Plataforma</th><th>Faixa</th><th>Data</th><th>Resultado</th></tr></thead>
+            <tbody id="tb-done"><tr><td colspan="6" class="small">Nenhuma candidatura concluída.</td></tr></tbody>
+          </table>
+        </div>
       </div>
     </div>
   </div>
