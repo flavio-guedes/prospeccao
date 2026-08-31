@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Hunters — Pipeline Hermes</title>
+<style>
+  :root {
+    --bg:#0b0d14; --panel:rgba(255,255,255,0.04); --line:rgba(255,255,255,0.10);
+    --text:#e8eaf0; --muted:#8a90a8; --accent:#7c6ff7; --green:#0affb0; --amber:#ffd166; --red:#ff5b7e;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:radial-gradient(circle at 15% 15%,rgba(124,111,247,.12),transparent 35%),radial-gradient(circle at 85% 85%,rgba(255,209,102,.08),transparent 35%),var(--bg);color:var(--text);font-family:Inter,system-ui,sans-serif;min-height:100vh;padding:20px}
+  .wrap{max-width:1200px;margin:0 auto}
+  header{display:flex;align-items:center;justify-content:space-between;gap:14px;border-bottom:1px solid var(--line);padding-bottom:16px;margin-bottom:18px;flex-wrap:wrap}
+  h1{font-size:22px;letter-spacing:.4px}
+  .sub{color:var(--muted);font-size:12px;margin-top:4px}
+  .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px;backdrop-filter:blur(14px);box-shadow:0 14px 30px rgba(0,0,0,.35)}
+  .k{font-size:11px;color:var(--muted);font-weight:700;letter-spacing:.6px;text-transform:uppercase}
+  .v{font-size:26px;font-weight:800;margin-top:6px}
+  .section{display:grid;gap:14px;margin-top:18px}
+  .section-title{font-size:13px;color:var(--muted);letter-spacing:.6px;text-transform:uppercase}
+  .card-link{display:block;text-decoration:none;color:inherit}
+  .card-link:hover{border-color:rgba(124,111,247,.45)}
+  .meta{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+  .badge{font-size:10px;font-weight:700;padding:4px 10px;border-radius:999px;border:1px solid rgba(255,255,255,.12);display:inline-block}
+  .b-blue{color:#7dc4ff;border-color:rgba(125,196,255,.25);background:rgba(125,196,255,.10)}
+  .b-green{color:var(--green);border-color:rgba(10,255,176,.25);background:rgba(10,255,176,.10)}
+  .b-amber{color:var(--amber);border-color:rgba(255,209,102,.25);background:rgba(255,209,102,.10)}
+  .b-red{color:var(--red);border-color:rgba(255,91,126,.25);background:rgba(255,91,126,.10)}
+  .table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;margin-top:8px}
+  table{width:100%;border-collapse:collapse;min-width:780px}
+  th,td{text-align:left;padding:10px 8px;border-bottom:1px solid var(--line);vertical-align:top}
+  th{color:var(--muted);font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:.6px;background:rgba(0,0,0,.18)}
+  td{font-size:13px;line-height:1.45}
+  .small{color:var(--muted);font-size:12px}
+  @media(max-width:860px){.kpis{grid-template-columns:repeat(2,1fr)} th,td{padding:10px 6px;font-size:12px} .card{padding:12px}}
+  @media(max-width:480px){.kpis{grid-template-columns:1fr 1fr} th,td{padding:8px 5px;font-size:11px} body{padding:16px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div>
+      <h1>Hunters</h1>
+      <div class="sub">Painel unificado dos hunters de prospecção · sem LinkedIn</div>
+    </div>
+    <div class="meta">
+      <span class="badge b-blue">Fontes: portais, e-mail, WhatsApp</span>
+      <span class="badge b-green">Status em tempo real</span>
+    </div>
+  </header>
+
+  <div class="kpis">
+    <div class="card"><div class="k">Hunter Vagas</div><div class="v" id="k-hunter">—</div><div class="small">hunter_vagas.html</div></div>
+    <div class="card"><div class="k">Job Radar</div><div class="v" id="k-radar">—</div><div class="small">dashboard/job-radar.html</div></div>
+    <div class="card"><div class="k">Alertas Vagas</div><div class="v" id="k-alertas">—</div><div class="small">dashboard/alertas-vagas.html</div></div>
+    <div class="card"><div class="k">Candidaturas</div><div class="v" id="k-candidaturas">—</div><div class="small">candidatura.html</div></div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Acesso rápido</div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px">
+      <a class="card card-link" href="https://flavio-guedes.github.io/prospeccao/hunter_vagas.html" target="_blank">
+        <div class="k">Hunter de Vagas</div>
+        <div class="v" style="font-size:18px;margin-top:6px;">Abrir painel</div>
+        <div class="meta"><span class="badge b-blue">Vagas</span><span class="badge b-green">Status</span></div>
+      </a>
+      <a class="card card-link" href="https://flavio-guedes.github.io/prospeccao/dashboard/job-radar.html" target="_blank">
+        <div class="k">Job Radar</div>
+        <div class="v" style="font-size:18px;margin-top:6px;">Abrir painel</div>
+        <div class="meta"><span class="badge b-blue">Coleta</span><span class="badge b-green">E-mail</span></div>
+      </a>
+      <a class="card card-link" href="https://flavio-guedes.github.io/prospeccao/dashboard/alertas-vagas.html" target="_blank">
+        <div class="k">Alertas de Vagas</div>
+        <div class="v" style="font-size:18px;margin-top:6px;">Abrir painel</div>
+        <div class="meta"><span class="badge b-amber">Alertas</span><span class="badge b-green">Status</span></div>
+      </a>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Status atual</div>
+    <div class="card">
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Painel</th><th>Status</th><th>Observação</th></tr></thead>
+          <tbody id="status-table">
+            <tr><td>hunter_vagas.html</td><td><span class="badge b-amber">Sem dados</span></td><td class="small">Aguardando ciclo de coleta</td></tr>
+            <tr><td>dashboard/job-radar.html</td><td><span class="badge b-amber">Sem dados</span></td><td class="small">Aguardando execução da coleta</td></tr>
+            <tr><td>dashboard/alertas-vagas.html</td><td><span class="badge b-amber">Sem dados</span></td><td class="small">Sem alertas registrados</td></tr>
+            <tr><td>candidatura.html</td><td><span class="badge b-green">Estruturado</span></td><td class="small">Painel pronto, sem entradas</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Por que não há dados</div>
+    <div class="card">
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Painel</th><th>Motivo</th><th>Próxima ação</th></tr></thead>
+          <tbody>
+            <tr><td>hunter_vagas.html</td><td class="small">Ciclo de pesquisa em andamento</td><td class="small">Aguardar retorno do Job Hunter</td></tr>
+            <tr><td>dashboard/job-radar.html</td><td class="small">Coleta manual/automática não executada</td><td class="small">Executar coleta</td></tr>
+            <tr><td>dashboard/alertas-vagas.html</td><td class="small">Sem configuração de alertas</td><td class="small">Configurar termos e frequência</td></tr>
+            <tr><td>candidatura.html</td><td class="small">Painel criado sem entradas</td><td class="small">Registrar primeira vaga</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>
