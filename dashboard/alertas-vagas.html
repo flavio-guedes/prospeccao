@@ -280,7 +280,7 @@
       const url = item.url;
       if (url && String(url).trim()) return url;
       const terms = [item.role, item.company, item.location, 'Remote'].filter(Boolean).map(encodeURIComponent).join('+');
-      return `https://www.linkedin.com/jobs/search/?keywords=${terms || encodeURIComponent(fallbackSearch)}`;
+      return ` || encodeURIComponent(fallbackSearch)}`;
     }
 
     function render(items) {

@@ -1205,7 +1205,7 @@ body>*:not(.ambient){position:relative;z-index:1}
     </select>
     <select class="crm-select" id="crm-f-ch" onchange="renderCRM()">
       <option value="">Todos os canais</option>
-      <option value="li">LinkedIn</option>
+      <option value="li" disabled>LinkedIn</option>
       <option value="wa">WhatsApp</option>
       <option value="em">E-mail</option>
       <option value="portal">Portal</option>
@@ -1408,7 +1408,7 @@ body>*:not(.ambient){position:relative;z-index:1}
       <div class="field">
         <label class="flabel">Canal</label>
         <select class="finput" id="m-ch">
-          <option value="li">LinkedIn</option>
+          <option value="li" disabled>LinkedIn</option>
           <option value="wa">WhatsApp</option>
           <option value="em">E-mail</option>
           <option value="portal">Portal de Vagas</option>
@@ -2595,10 +2595,10 @@ function jobUrl(kw,geoId,loc,tpr,wt,jt){
   if(wt)  p.push('f_WT='+wt);
   if(jt)  p.push('f_JT='+jt);
   p.push('refresh=true');
-  return 'https://www.linkedin.com/jobs/search/?'+p.join('&');
+  return ''+p.join('&');
 }
 function postUrl(q,date,net){
-  let url='https://www.linkedin.com/search/results/content/?keywords='+liEncode(q);
+  let url=''+liEncode(q);
   if(date) url+='&datePosted=%22'+date+'%22';
   if(net) url+='&network=%5B%22'+net+'%22%5D';
   url+='&sortBy=%5B%22date_posted%22%5D';
@@ -2824,7 +2824,7 @@ PERFIL:
 TAREFA: Analise o timing de mercado e gere 8 oportunidades ranqueadas por FIT + TIMING agora (março 2026).
 Considere: demanda de mercado atual, janelas abertas, nível de competição, encaixe perfil.
 
-Portais a mapear: LinkedIn, Gupy, Catho, Indeed, Vagas.com, InfoJobs, 99Jobs, Trampos, Workana.
+Portais a mapear: Gupy, Catho, Indeed, Vagas.com, InfoJobs, 99Jobs, Trampos, Workana.com, InfoJobs, 99Jobs, Trampos, Workana.
 
 Retorne APENAS JSON:
 [{

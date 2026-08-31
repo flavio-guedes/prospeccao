@@ -290,7 +290,7 @@ body>*:not(.ambient){position:relative;z-index:1}
     <input class="finput" id="qa-company" placeholder="Empresa">
     <input class="finput" id="qa-role" placeholder="Cargo">
     <select class="finput" id="qa-ch">
-      <option value="li">LinkedIn</option>
+      <option value="li" disabled>LinkedIn</option>
       <option value="wa">WhatsApp</option>
       <option value="em">E-mail</option>
       <option value="portal">Portal</option>
@@ -343,12 +343,12 @@ let period='r86400';
 let roles=new Set();
 const ROLE_PRESETS=['Head de Marketing','Gerente de Marketing','Diretor de Arte','Creative Director','Product Manager','Product Owner','Product Designer','UX Designer','UI Designer','PMM','AI Product Manager','Growth PM','Content Manager','Social Media','Brand Manager'];
 let emailDB=JSON.parse(localStorage.getItem('cos_emails')||'null')||[
-  {company:'Nubank',role:'Product Manager',location:'Remoto',date:'2026-08-15',url:'https://example.com/nubank-pm',source:'LinkedIn Jobs',email:'recrutamento@nubank.com',contact_type:'E-mail público',area:'PRODUTO',category:'PRODUTO',firstname:'Equipe',lastname:'Nubank'},
-  {company:'Totvs',role:'Product Marketing Manager',location:'São Paulo',date:'2026-08-14',url:'https://example.com/totvs-pmm',source:'LinkedIn Jobs',email:'gente@totvs.com',contact_type:'E-mail público',area:'PRODUTO',category:'PRODUTO',firstname:'Equipe',lastname:'Totvs'},
+  {company:'Nubank',role:'Product Manager',location:'Remoto',date:'2026-08-15',url:'https://example.com/nubank-pm',source:'Portal',email:'recrutamento@nubank.com',contact_type:'E-mail público',area:'PRODUTO',category:'PRODUTO',firstname:'Equipe',lastname:'Nubank'},
+  {company:'Totvs',role:'Product Marketing Manager',location:'São Paulo',date:'2026-08-14',url:'https://example.com/totvs-pmm',source:'Portal',email:'gente@totvs.com',contact_type:'E-mail público',area:'PRODUTO',category:'PRODUTO',firstname:'Equipe',lastname:'Totvs'},
   {company:'Gympass',role:'UX Designer',location:'Remoto',date:'2026-08-14',url:'https://example.com/gympass-ux',source:'Gupy',email:'people@nubank.com',contact_type:'E-mail público',area:'DESIGN',category:'DESIGN',firstname:'Equipe',lastname:'Gympass'},
-  {company:'C6 Bank',role:'Creative Director',location:'São Paulo',date:'2026-08-13',url:'https://example.com/c6-creative',source:'LinkedIn Jobs',email:'recrutamento@c6bank.com',contact_type:'E-mail público',area:'DESIGN',category:'DESIGN',firstname:'Equipe',lastname:'C6 Bank'},
-  {company:'Meli',role:'Marketing Manager',location:'Remoto',date:'2026-08-13',url:'https://example.com/meli-mkt',source:'LinkedIn Jobs',email:'rh@mercadolivre.com',contact_type:'E-mail público',area:'MARKETING',category:'MARKETING',firstname:'Equipe',lastname:'Meli'},
-  {company:'BeHive',role:'AI Product Manager',location:'Remoto',date:'2026-08-12',url:'https://example.com/behive-ai-pm',source:'LinkedIn Jobs',email:'jobs@behive.ai',contact_type:'E-mail público',area:'IA/TECH',category:'IA',firstname:'Equipe',lastname:'BeHive'}
+  {company:'C6 Bank',role:'Creative Director',location:'São Paulo',date:'2026-08-13',url:'https://example.com/c6-creative',source:'Portal',email:'recrutamento@c6bank.com',contact_type:'E-mail público',area:'DESIGN',category:'DESIGN',firstname:'Equipe',lastname:'C6 Bank'},
+  {company:'Meli',role:'Marketing Manager',location:'Remoto',date:'2026-08-13',url:'https://example.com/meli-mkt',source:'Portal',email:'rh@mercadolivre.com',contact_type:'E-mail público',area:'MARKETING',category:'MARKETING',firstname:'Equipe',lastname:'Meli'},
+  {company:'BeHive',role:'AI Product Manager',location:'Remoto',date:'2026-08-12',url:'https://example.com/behive-ai-pm',source:'Portal',email:'jobs@behive.ai',contact_type:'E-mail público',area:'IA/TECH',category:'IA',firstname:'Equipe',lastname:'BeHive'}
 ];
 let emailCategory='TODOS';
 let crmDB=[];
@@ -415,7 +415,7 @@ function buildQuery(){
     filters='&f_WT=2';
   }
   const loc=location || 'Brasil';
-  let url='https://www.linkedin.com/jobs/search/?keywords='+encodeURIComponent(q)+'&location='+encodeURIComponent(loc)+'&geoId='+geoId+'&refresh=true';
+  let url=''+encodeURIComponent(q)+'&location='+encodeURIComponent(loc)+'&geoId='+geoId+'&refresh=true';
   if(period) url+='&f_TPR='+period;
   url+=filters;
   return {q,url};
