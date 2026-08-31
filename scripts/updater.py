@@ -274,6 +274,19 @@ def update() -> dict:
         item["fit_score"] = scored["fit_score"]
         item["priority"] = scored["priority"]
         item["freshness"] = scored["freshness"]
+        item["candidatura_status"] = scored["candidatura_status"]
+        item["criterios"] = scored["criterios"]
+        item["motivos"] = scored["motivos"]
+        item["lacunas"] = scored["lacunas"]
+        item["recomendacao"] = scored["recomendacao"]
+        item["descoberta_em"] = scored["descoberta_em"]
+        item["estrategias_encontradas"] = scored["estrategias_encontradas"]
+        item.setdefault("status_history", [])
+        item["status_history"].append({
+            "status": item.get("status", "DISCOVERED"),
+            "candidatura_status": scored["candidatura_status"],
+            "at": _utcnow(),
+        })
         item["scored_at"] = _utcnow()
         item.setdefault("matches", [])
         item.setdefault("gaps", [])
@@ -289,12 +302,16 @@ def update() -> dict:
         "updated": len(results),
         "path": str(scored_path),
         "stats": {
-            "priority_max": sum(1 for x in results if x.get("priority") == "PRIORIDADE MÁXIMA"),
-            "high": sum(1 for x in results if x.get("priority") == "ALTA"),
-            "good": sum(1 for x in results if x.get("priority") == "BOA"),
-            "secondary": sum(1 for x in results if x.get("priority") == "SECUNDÁRIA"),
-            "discard": sum(1 for x in results if x.get("priority") == "DESCARTAR"),
-        }
+            "priority_max": sum(1 for x in results if x.get("priority") == "Muito alta"),
+            "high": sum(1 for x in results if x.get("priority") == "Alta"),
+            "good": sum(1 for x in results if x.get("priority") == "Média"),
+            "secondary": sum(1 for x in results if x.get("priority") == "Baixa"),
+            "discard": sum(1 for x in results if x.get("priority") == "Descartar"),
+            "candidatar": sum(1 for x in results if x.get("candidatura_status") == "Candidatar"),
+            "interessante": sum(1 for x in results if x.get("candidatura_status") == "Interessante"),
+            "avaliar": sum(1 for x in results if x.get("candidatura_status") == "Avaliar"),
+            "ignorada": sum(1 for x in results if x.get("candidatura_status") == "Ignorada"),
+        },
     }
 
 

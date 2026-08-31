@@ -121,26 +121,15 @@ def score_opportunity(opportunity: dict) -> dict:
         opportunity.get("company", ""),
         opportunity.get("location", ""),
         opportunity.get("remote_type", ""),
-        opportunity.get("requirements", []) and " ".join(opportunity.get("requirements", [])) or "",
+        " ".join(opportunity.get("requirements", []) or []),
         opportunity.get("notes", ""),
         opportunity.get("url", ""),
     ])
     text_n = _normalize(text).lower()
-
     role = _normalize(opportunity.get("role", "")).lower()
+
     role_match = any(k.lower() in role for k in ROLE_KEYWORDS)
     semantic_match = any(k in text_n for k in SKILL_KEYWORDS)
-
-    # Weights from profile if present
-    weights = profile.get("fit_score", {})
-    skills_weight = weights.get("skills_weight", 0.30)
-    experience_weight = weights.get("experience_weight", 0.20)
-    ai_weight = weights.get("ai_automation_agents_weight", 0.15)
-    remote_weight = weights.get("remote_compatibility_weight", 0.10)
-    compensation_weight = weights.get("compensation_weight", 0.10)
-    location_weight = weights.get("location_weight", 0.05)
-    seniority_weight = weights.get("seniority_weight", 0.05)
-    strategic_weight = weights.get("strategic_value_weight", 0.05)
 
     skill_score = 0
     if role_match:
@@ -211,46 +200,101 @@ def score_opportunity(opportunity: dict) -> dict:
         seniority_score = 40
 
     strategic_score = 60
-    if any(k in text_n for k in ["ai-native", "ai first", "ai-native", "startup", "platform", "agentic"]):
+    if any(k in text_n for k in ["ai-native", "ai first", "startup", "platform", "agentic"]):
         strategic_score = 90
     if any(k in text_n for k in ["enterprise", "consulting", "agency"]):
         strategic_score = 75
 
     fit = round(
-        skill_score * skills_weight
-        + experience_score * experience_weight
-        + ai_score * ai_weight
-        + remote_score * remote_weight
-        + compensation_score * compensation_weight
-        + location_score * location_weight
-        + seniority_score * seniority_weight
-        + strategic_score * strategic_weight,
+        skill_score * 0.30
+        + experience_score * 0.20
+        + ai_score * 0.15
+        + remote_score * 0.10
+        + compensation_score * 0.10
+        + location_score * 0.05
+        + seniority_score * 0.05
+        + strategic_score * 0.05,
         2,
     )
     fit = int(max(0, min(100, fit)))
 
-    # Avoid penalize
     avoid_hits = [t for t in AVOID_TOKENS if t.lower() in text_n]
     gap_penalty = min(len(avoid_hits) * 8, 24)
     fit = max(0, fit - gap_penalty)
 
     if fit >= 90:
-        priority = "PRIORIDADE MÁXIMA"
+        priority = "Muito alta"
     elif fit >= 80:
-        priority = "ALTA"
+        priority = "Alta"
     elif fit >= 70:
-        priority = "BOA"
+        priority = "Média"
     elif fit >= 60:
-        priority = "SECUNDÁRIA"
+        priority = "Baixa"
     else:
-        priority = "DESCARTAR"
+        priority = "Descartar"
+
+    if fit >= 90:
+        candidatura_status = "Candidatar"
+    elif fit >= 75:
+        candidatura_status = "Interessante"
+    elif fit >= 60:
+        candidatura_status = "Avaliar"
+    else:
+        candidatura_status = "Ignorada"
 
     freshness = classify_freshness(opportunity.get("published_date", ""))
+
+    criterios = {
+        "cargo": min(100, 60 + sum(1 for k in SKILL_KEYWORDS if k in text_n) * 6),
+        "responsabilidades": 88 if any(k in text_n for k in ["gestão", "gestao", "estratégia", "estrategia", "produto", "conteúdo", "content"]) else 55,
+        "competencias": 82 if any(k in text_n for k in SKILL_KEYWORDS) else 40,
+        "senioridade": min(100, 55 + seniority_score),
+        "modalidade_localizacao": 92 if remote_score >= 90 else 72 if remote_score >= 50 else 45,
+        "atualidade": min(100, 70 + max(0, 10 - opportunity.get("age_minutes", 10)) * 3),
+    }
+    for k, v in criterios.items():
+        criterios[k] = min(100, max(0, v))
+
+    motivos = []
+    if any(k in role for k in ["head", "diretor", "director", "executivo"]):
+        motivos.append("cargo de liderança compatível")
+    if criterios["cargo"] >= 80:
+        motivos.append("cargo altamente aderente")
+    if criterios["responsabilidades"] >= 80:
+        motivos.append("responsabilidades aderentes")
+    if opportunity.get("source") == "linkedin_posts":
+        motivos.append("intenção de contratação explícita")
+    if opportunity.get("match_score", 0) >= 80:
+        motivos.append("alta aderência estimada")
+    if opportunity.get("age_minutes", 9999) <= 5:
+        motivos.append("publicação muito recente")
+
+    lacunas = []
+    if not any(k in text_n for k in ["remoto", "remote", "anywhere", "worldwide"]):
+        lacunas.append("Modalidade remota não explícita")
+    if opportunity.get("age_minutes", 0) > 120:
+        lacunas.append("Publicação não recente")
+    if not opportunity.get("application_url") and not opportunity.get("email") and not opportunity.get("whatsapp"):
+        lacunas.append("Sem contato ou link direto")
+    if avoid_hits:
+        lacunas.append("Termo evitado presente")
+
+    recomendacao = (
+        "Recomendo candidatar. Alta aderência e potencial estratégico."
+        if fit >= 85
+        else "Avaliar antes de candidatar. Boa aderência, mas vale checar responsabilidades."
+        if fit >= 70
+        else "Baixa prioridade. Interesse parcial; só candidate se houver fit complementar."
+        if fit >= 55
+        else "Não recomendo agora. Fora do foco atual."
+    )
 
     return {
         "fit_score": fit,
         "priority": priority,
         "freshness": freshness,
+        "candidatura_status": candidatura_status,
+        "criterios": criterios,
         "components": {
             "skills": skill_score,
             "experience": experience_score,
@@ -262,7 +306,12 @@ def score_opportunity(opportunity: dict) -> dict:
             "strategic": strategic_score,
         },
         "avoid_hits": avoid_hits,
-        "gaps_suggested": list({h for h in avoid_hits}),
+        "gaps_suggested": list({*avoid_hits}),
+        "motivos": motivos,
+        "lacunas": lacunas,
+        "recomendacao": recomendacao,
+        "descoberta_em": opportunity.get("descoberta_em") or _utcnow(),
+        "estrategias_encontradas": opportunity.get("estrategias_encontradas") or ([opportunity.get("source")] if opportunity.get("source") else []),
     }
 
 
