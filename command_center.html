@@ -146,6 +146,9 @@ select.status-sel{background:var(--panel2); border:1px solid var(--border); colo
     <div class="eyebrow">Flávio Guedes · Base de Contatos</div>
     <h1><span class="dot"></span>Prospecção · Command Center</h1>
     <div class="subtitle">Gestão de contatos, segmentação e preparação de disparos — apenas contatos com e-mail válido</div>
+    <div style="margin-top:12px; display:flex; gap:10px; flex-wrap:wrap;">
+      <button class="btn btn-primary" id="btnOpenKanbanTop" style="padding:12px 18px; font-size:14px; box-shadow:0 4px 20px rgba(109,91,255,.4);">📋 Abrir Kanban</button>
+    </div>
   </header>
 
   <div class="cards-grid" id="statsGrid"></div>
@@ -244,7 +247,7 @@ select.status-sel{background:var(--panel2); border:1px solid var(--border); colo
 </div>
 
 
-<div class="section-title" style="margin-top:28px;">Kanban · Ações por objetivo</div>
+<div class="section-title" style="margin-top:28px;" id="kanbanSection">Kanban · Ações por objetivo</div>
   <div class="board" id="board">
     <div class="column listas" data-col="listas">
       <div class="col-head">
@@ -885,6 +888,11 @@ function render(){
 render();
 
 </script>
+
+document.getElementById('btnOpenKanbanTop').addEventListener('click', ()=>{
+  const el = document.getElementById('kanbanSection');
+  if(el) el.scrollIntoView({behavior:'smooth', block:'start'});
+});
 </body>
 </html>
 
