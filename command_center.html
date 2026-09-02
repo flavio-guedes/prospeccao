@@ -41,7 +41,8 @@ select.filter{background:var(--panel); border:1px solid var(--border); color:var
 .btn-ghost{background:var(--panel2); color:var(--text); border:1px solid var(--border); padding:9px 14px; font-size:12.5px;}
 .btn-danger{background:rgba(232,84,107,.15); color:var(--danger); border:1px solid rgba(232,84,107,.3); padding:9px 14px; font-size:12.5px;}
 
-.board{display:grid; grid-template-columns:repeat(5, minmax(0,1fr)); gap:14px; align-items:start;}
+.board{display:grid; grid-template-columns:repeat(7, minmax(0,1fr)); gap:14px; align-items:start;}
+@media(max-width:1400px){ .board{ grid-template-columns:repeat(5, minmax(0,1fr));} }
 @media(max-width:1100px){ .board{ grid-template-columns:repeat(2,1fr);} }
 @media(max-width:640px){ .board{ grid-template-columns:1fr;} }
 .column{background:linear-gradient(180deg,var(--panel),var(--panel2)); border:1px solid var(--border); border-radius:14px; min-height:120px; display:flex; flex-direction:column; max-height: calc(100vh - 220px);}
@@ -98,11 +99,13 @@ select.filter{background:var(--panel); border:1px solid var(--border); color:var
 .toast{position:fixed; bottom:100px; left:50%; transform:translateX(-50%) translateY(20px); background:var(--ok); color:#04140b; font-weight:700; font-size:13px; padding:11px 20px; border-radius:30px; opacity:0; pointer-events:none; transition:.25s; z-index:200; box-shadow:0 8px 24px rgba(0,0,0,.4);}
 .toast.show{opacity:1; transform:translateX(-50%) translateY(0);}
 
-.backlog{order:1}
+.listas{order:1}
 .pesquisa{order:2}
-.abordagem{order:3}
-.follow{order:4}
-.fechamento{order:5}
+.enviados{order:3}
+.reuniao{order:4}
+.proposta{order:5}
+.ganho{order:6}
+.perda{order:7}
 </style>
 </head>
 <body>
@@ -130,12 +133,12 @@ select.filter{background:var(--panel); border:1px solid var(--border); color:var
   </div>
 
   <div class="board" id="board">
-    <div class="column backlog" data-col="backlog">
+    <div class="column listas" data-col="listas">
       <div class="col-head">
-        <div><div class="col-title">Backlog <span class="col-count" id="c-backlog">0</span></div></div>
-        <div class="col-actions"><button class="btn btn-ghost" data-add="backlog">Adicionar</button></div>
+        <div><div class="col-title">Listas <span class="col-count" id="c-listas">0</span></div></div>
+        <div class="col-actions"><button class="btn btn-ghost" data-add="listas">Adicionar</button></div>
       </div>
-      <div class="col-body" id="col-backlog"></div>
+      <div class="col-body" id="col-listas"></div>
     </div>
     <div class="column pesquisa" data-col="pesquisa">
       <div class="col-head">
@@ -144,26 +147,40 @@ select.filter{background:var(--panel); border:1px solid var(--border); color:var
       </div>
       <div class="col-body" id="col-pesquisa"></div>
     </div>
-    <div class="column abordagem" data-col="abordagem">
+    <div class="column enviados" data-col="enviados">
       <div class="col-head">
-        <div><div class="col-title">Abordagem <span class="col-count" id="c-abordagem">0</span></div></div>
-        <div class="col-actions"><button class="btn btn-ghost" data-add="abordagem">Adicionar</button></div>
+        <div><div class="col-title">Enviados <span class="col-count" id="c-enviados">0</span></div></div>
+        <div class="col-actions"><button class="btn btn-ghost" data-add="enviados">Adicionar</button></div>
       </div>
-      <div class="col-body" id="col-abordagem"></div>
+      <div class="col-body" id="col-enviados"></div>
     </div>
-    <div class="column follow" data-col="follow">
+    <div class="column reuniao" data-col="reuniao">
       <div class="col-head">
-        <div><div class="col-title">Follow-up <span class="col-count" id="c-follow">0</span></div></div>
-        <div class="col-actions"><button class="btn btn-ghost" data-add="follow">Adicionar</button></div>
+        <div><div class="col-title">Reunião <span class="col-count" id="c-reuniao">0</span></div></div>
+        <div class="col-actions"><button class="btn btn-ghost" data-add="reuniao">Adicionar</button></div>
       </div>
-      <div class="col-body" id="col-follow"></div>
+      <div class="col-body" id="col-reuniao"></div>
     </div>
-    <div class="column fechamento" data-col="fechamento">
+    <div class="column proposta" data-col="proposta">
       <div class="col-head">
-        <div><div class="col-title">Fechamento <span class="col-count" id="c-fechamento">0</span></div></div>
-        <div class="col-actions"><button class="btn btn-ghost" data-add="fechamento">Adicionar</button></div>
+        <div><div class="col-title">Proposta <span class="col-count" id="c-proposta">0</span></div></div>
+        <div class="col-actions"><button class="btn btn-ghost" data-add="proposta">Adicionar</button></div>
       </div>
-      <div class="col-body" id="col-fechamento"></div>
+      <div class="col-body" id="col-proposta"></div>
+    </div>
+    <div class="column ganho" data-col="ganho">
+      <div class="col-head">
+        <div><div class="col-title">Ganho <span class="col-count" id="c-ganho">0</span></div></div>
+        <div class="col-actions"><button class="btn btn-ghost" data-add="ganho">Adicionar</button></div>
+      </div>
+      <div class="col-body" id="col-ganho"></div>
+    </div>
+    <div class="column perda" data-col="perda">
+      <div class="col-head">
+        <div><div class="col-title">Perda <span class="col-count" id="c-perda">0</span></div></div>
+        <div class="col-actions"><button class="btn btn-ghost" data-add="perda">Adicionar</button></div>
+      </div>
+      <div class="col-body" id="col-perda"></div>
     </div>
   </div>
 </div>
@@ -233,7 +250,7 @@ select.filter{background:var(--panel); border:1px solid var(--border); color:var
 <div class="toast" id="toast"></div>
 
 <script>
-const STAGES = ['backlog','pesquisa','abordagem','follow','fechamento'];
+const STAGES = ['listas','pesquisa','enviados','reuniao','proposta','ganho','perda'];
 const LS_KEY = 'prospeccao_kanban_v1';
 let items = [];
 let selected = new Set();
@@ -245,7 +262,7 @@ try{ const raw = localStorage.getItem(LS_KEY); if(raw){ items = JSON.parse(raw);
 function save(){ localStorage.setItem(LS_KEY, JSON.stringify(items)); }
 function esc(s){ return (s||'').replace(/[&<>"']/g, m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
 
-function counts(){ const c={backlog:0,pesquisa:0,abordagem:0,follow:0,fechamento:0}; items.forEach(i=>{ if(c[i.stage]!==undefined) c[i.stage]++; }); return c; }
+function counts(){ const c={listas:0,pesquisa:0,enviados:0,reuniao:0,proposta:0,ganho:0,perda:0}; items.forEach(i=>{ if(c[i.stage]!==undefined) c[i.stage]++; }); return c; }
 function filtered(){
   const q = (document.getElementById('searchInput').value||'').toLowerCase();
   const tier = document.getElementById('tierFilter').value;
@@ -267,7 +284,7 @@ function render(){
   const list = filtered();
   const c = counts();
   STAGES.forEach(s=>{ document.getElementById('c-'+s).textContent = c[s]; });
-  const by = {backlog:[],pesquisa:[],abordagem:[],follow:[],fechamento:[]};
+  const by = {listas:[],pesquisa:[],enviados:[],reuniao:[],proposta:[],ganho:[],perda:[]};
   list.forEach(i=>{ if(by[i.stage]) by[i.stage].push(i); });
   STAGES.forEach(s=>{
     const box = document.getElementById('col-'+s);
@@ -289,7 +306,7 @@ function render(){
           ${i.tier ? `<span class="badge badge-tier">${esc(i.tier)}</span>` : ''}
           ${i.subtype ? `<span class="badge badge-sub">${esc(i.subtype)}</span>` : ''}
         </div>
-        <div class="follow"><b>Follow:</b> ${esc(i.nextAction || i.followSuggestion || 'Definir próxima ação')} ${i.dueDate ? `<br><b>Data alvo:</b> ${esc(i.dueDate)}` : ''}</div>
+        <div class="follow"><b>Próxima ação:</b> ${esc(i.nextAction || i.followSuggestion || 'Definir próxima ação')} ${i.dueDate ? `<br><b>Data alvo:</b> ${esc(i.dueDate)}` : ''}</div>
         <div class="card-actions">
           <button class="btn btn-ghost move-left" data-id="${i.id}">◀</button>
           <button class="btn btn-ghost move-right" data-id="${i.id}">▶</button>
@@ -420,7 +437,7 @@ function saveItem(){
   const dueDate = document.getElementById('mDate').value;
   const note = document.getElementById('mNote').value.trim();
   const followSuggestion = (followFor(objective)[0] || '');
-  const stage = editingId ? (items.find(x=>x.id===editingId)?.stage || 'backlog') : 'backlog';
+  const stage = editingId ? (items.find(x=>x.id===editingId)?.stage || 'listas') : 'backlog';
   const tier = objectiveTier(objective);
   const subtype = objectiveSubtype(objective);
   const payload = { objective, title, name, company, role, email, priority, nextAction, dueDate, note, followSuggestion, stage, tier, subtype };
@@ -452,7 +469,7 @@ document.getElementById('mObjective').addEventListener('change', renderSuggestio
 document.getElementById('btnDeleteSel').addEventListener('click', deleteSelected);
 document.getElementById('btnMoveSel').addEventListener('click', ()=>{
   if(!selected.size) return showToast('Selecione ao menos um item');
-  const choice = prompt('Mover seleção para:\nbacklog\npesquisa\nabordagem\nfollow\nfechamento');
+  const choice = prompt('Mover seleção para:\nlistas\npesquisa\nenviados\nreuniao\nproposta\nganho\nperda');
   const stage = choice && STAGES.includes(choice) ? choice : null;
   if(!stage) return showToast('Estágio inválido');
   items.forEach(i=>{ if(selected.has(i.id)) i.stage = stage; });
