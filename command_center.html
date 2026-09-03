@@ -346,6 +346,14 @@ select.status-sel{background:var(--panel2); border:1px solid var(--border); colo
     <input type="text" id="kanbanMNextAction" placeholder="Ex: Ligação, DM, envio de portfólio">
     <div class="field-label">Data alvo</div>
     <input type="date" id="kanbanMDate">
+    <div class="field-label">Canal do disparo</div>
+    <select id="kanbanMChannel">
+      <option value="email">E-mail</option>
+      <option value="linkedin">LinkedIn DM</option>
+      <option value="whatsapp">WhatsApp</option>
+      <option value="ligacao">Ligação</option>
+      <option value="outro">Outro</option>
+    </select>
     <div class="field-label">Observação</div>
     <textarea id="kanbanMNote" placeholder="Contexto, link, briefing..."></textarea>
     <div class="field-label">Follow sugerido</div>
@@ -958,6 +966,7 @@ function render(){
           </div>
         </div>
         <div class="badges">
+          ${i.channel ? `<span class="badge">${esc(i.channel)}</span>` : ''}
           ${i.priority ? `<span class="badge badge-prio">${esc(i.priority)}</span>` : ''}
           ${i.tier ? `<span class="badge badge-tier">${esc(i.tier)}</span>` : ''}
           ${i.subtype ? `<span class="badge badge-sub">${esc(i.subtype)}</span>` : ''}
@@ -1054,6 +1063,7 @@ function openModal(id){
     document.getElementById('kanbanMRole').value = it.role || '';
     document.getElementById('kanbanMEmail').value = it.email || '';
     document.getElementById('kanbanMPrio').value = it.priority || 'Média';
+    document.getElementById('kanbanMChannel').value = it.channel || 'email';
     document.getElementById('kanbanMNextAction').value = it.nextAction || '';
     document.getElementById('kanbanMDate').value = it.dueDate || '';
     document.getElementById('kanbanMNote').value = it.note || '';
@@ -1065,6 +1075,7 @@ function openModal(id){
     document.getElementById('kanbanMObjective').value = 'vaga';
     ['kanbanMTitleInput','kanbanMName','kanbanMCompany','kanbanMRole','kanbanMEmail','kanbanMNextAction','kanbanMNote'].forEach(k=> document.getElementById(k).value='');
     document.getElementById('kanbanMPrio').value = 'Média';
+    document.getElementById('kanbanMChannel').value = 'email';
     document.getElementById('kanbanMDate').value = '';
     document.getElementById('kanbanMStage').textContent = editingId ? (items.find(x=>x.id===editingId)?.stage || '—') : 'listas';
     document.getElementById('kanbanMDelete').style.display = 'none';
@@ -1090,6 +1101,7 @@ function saveItem(){
   const role = document.getElementById('kanbanMRole').value.trim();
   const email = document.getElementById('kanbanMEmail').value.trim();
   const priority = document.getElementById('kanbanMPrio').value;
+  const channel = document.getElementById('kanbanMChannel').value;
   const nextAction = document.getElementById('kanbanMNextAction').value.trim();
   const dueDate = document.getElementById('kanbanMDate').value;
   const note = document.getElementById('kanbanMNote').value.trim();
@@ -1097,7 +1109,7 @@ function saveItem(){
   const stage = editingId ? (items.find(x=>x.id===editingId)?.stage || 'listas') : 'listas';
   const tier = objectiveTier(objective);
   const subtype = objectiveSubtype(objective);
-  const payload = { objective, title, name, company, role, email, priority, nextAction, dueDate, note, followSuggestion, stage, tier, subtype };
+  const payload = { objective, title, name, company, role, email, priority, channel, nextAction, dueDate, note, followSuggestion, stage, tier, subtype };
   if(editingId){ const idx = items.findIndex(x=>x.id===editingId); if(idx>=0) items[idx] = { ...items[idx], ...payload }; }
   else { items.push({ id: nextId++, ...payload }); }
   save(); closeModal(); render(); showToast('Ação salva');
