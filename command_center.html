@@ -147,7 +147,7 @@ select.status-sel{background:var(--panel2); border:1px solid var(--border); colo
     <h1><span class="dot"></span>Prospecção · Command Center</h1>
     <div class="subtitle">Gestão de contatos, segmentação e preparação de disparos — apenas contatos com e-mail válido</div>
     <div style="margin-top:12px; display:flex; gap:10px; flex-wrap:wrap;">
-      <button class="btn btn-primary" id="btnOpenKanbanTop" style="padding:12px 18px; font-size:14px; box-shadow:0 4px 20px rgba(109,91,255,.4);" onclick="document.getElementById('kanbanSection')?.scrollIntoView({behavior:'smooth', block:'start'});">📋 Abrir Kanban</button>
+      <button class="btn btn-primary" id="btnOpenKanbanTop" style="padding:12px 18px; font-size:14px; box-shadow:0 4px 20px rgba(109,91,255,.4);" onclick="window.location.href='kanban_disparos.html'">📋 Abrir Kanban de Disparos</button>
     </div>
   </header>
 
@@ -891,8 +891,7 @@ render();
 
 try {
   document.getElementById('btnOpenKanbanTop').addEventListener('click', ()=>{
-    const el = document.getElementById('kanbanSection');
-    if(el) el.scrollIntoView({behavior:'smooth', block:'start'});
+    window.location.href='kanban_disparos.html';
   });
 } catch(e) {
   console.error('Erro ao adicionar listener do kanban:', e);
