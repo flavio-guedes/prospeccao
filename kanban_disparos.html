@@ -142,7 +142,18 @@ textarea{min-height:80px;resize:vertical;}
       <div class="modal-stat"><div class="v" id="mSelStat">0</div><div class="l">Selecionados</div></div>
       <div class="modal-stat"><div class="v" id="mStage">—</div><div class="l">Estágio</div></div>
     </div>
-    <div class="field-label">Contato / Nome</div>
+    <div class="field-label">Objetivo / Fluxo</div>
+    <select id="mObjective">
+      <option value="vaga">Vaga / Contratação</option>
+      <option value="indicacao">Indicação</option>
+      <option value="recolocacao">Reconexão / Recolocação</option>
+      <option value="parceria">Parceria / Projeto</option>
+      <option value="comercial">Comercial</option>
+      <option value="reactivacao">Reativação leve</option>
+    </select>
+    <div class="field-label">Título</div>
+    <input type="text" id="mTitle" placeholder="Ex: Follow com gestor de produto na X">
+    <div class="field-label">Nome / Contato</div>
     <input type="text" id="mName" placeholder="Nome do contato">
     <div class="field-label">Empresa</div>
     <input type="text" id="mCompany" placeholder="Empresa">
@@ -150,6 +161,13 @@ textarea{min-height:80px;resize:vertical;}
     <input type="text" id="mRole" placeholder="Cargo">
     <div class="field-label">E-mail</div>
     <input type="text" id="mEmail" placeholder="e-mail">
+    <div class="field-label">Prioridade</div>
+    <select id="mPriority">
+      <option value="Alta">🔥 Alta</option>
+      <option value="Média">🟡 Média</option>
+      <option value="Média-Baixa">🟡 Média-Baixa</option>
+      <option value="Baixa">⚪ Baixa</option>
+    </select>
     <div class="field-label">Canal do disparo</div>
     <select id="mChannel">
       <option value="email">E-mail</option>
@@ -158,10 +176,10 @@ textarea{min-height:80px;resize:vertical;}
       <option value="ligacao">Ligação</option>
       <option value="outro">Outro</option>
     </select>
-    <div class="field-label">Data do disparo</div>
-    <input type="date" id="mDate">
     <div class="field-label">Próxima ação</div>
-    <input type="text" id="mNextAction" placeholder="Ex: Follow em 3 dias">
+    <input type="text" id="mNextAction" placeholder="Ex: Ligação, DM, envio de portfólio">
+    <div class="field-label">Data alvo</div>
+    <input type="date" id="mDate">
     <div class="field-label">Observação / Resposta</div>
     <textarea id="mNote" placeholder="Resumo do contato, resposta recebida..."></textarea>
     <div class="modal-actions">
@@ -175,7 +193,7 @@ textarea{min-height:80px;resize:vertical;}
 
 <script>
 const STAGES = ['listas','enviados','reuniao','proposta','ganho','perda'];
-const LS_KEY = 'prospeccao_disparos_v1';
+const LS_KEY = 'prospeccao_kanban_v1';
 let items = [];
 let selected = new Set();
 let nextId = 1;
@@ -219,8 +237,8 @@ function render(){
       return `<div class="card ${isSel?'sel':''}" data-id="${i.id}">
         <div class="card-top">
           <div style="flex:1;min-width:0;">
-            <div class="c-name">${channelIcon} ${esc(i.name || 'Contato')}</div>
-            <div class="c-meta">${esc(i.company || '')} ${i.role ? '· ' + esc(i.role) : ''}</div>
+            <div class="c-name">${esc(i.title || i.name || 'Ação')}</div>
+            <div class="c-meta">${esc(i.name || '')} ${i.company ? '· '+esc(i.company) : ''}</div>
             <div class="c-email">${esc(i.email || '')}</div>
           </div>
         </div>
@@ -300,26 +318,32 @@ function openModal(id){
     const it = items.find(x=>x.id===id); if(!it) return;
     document.getElementById('mTitle').textContent = 'Editar disparo';
     document.getElementById('mSub').textContent = 'Ajuste e salve';
+    document.getElementById('mObjective').value = it.objective || 'vaga';
+    document.getElementById('mTitle').value = it.title || '';
     document.getElementById('mName').value = it.name || '';
     document.getElementById('mCompany').value = it.company || '';
     document.getElementById('mRole').value = it.role || '';
     document.getElementById('mEmail').value = it.email || '';
+    document.getElementById('mPriority').value = it.priority || 'Média';
     document.getElementById('mChannel').value = it.channel || 'email';
-    document.getElementById('mDate').value = it.date || '';
     document.getElementById('mNextAction').value = it.nextAction || '';
+    document.getElementById('mDate').value = it.date || '';
     document.getElementById('mNote').value = it.note || '';
     document.getElementById('mStage').textContent = it.stage || '—';
     document.getElementById('mDelete').style.display = 'inline-flex';
   } else {
     document.getElementById('mTitle').textContent = 'Novo disparo';
     document.getElementById('mSub').textContent = 'Registre os dados do disparo';
+    document.getElementById('mObjective').value = 'vaga';
+    document.getElementById('mTitle').value = '';
     document.getElementById('mName').value = '';
     document.getElementById('mCompany').value = '';
     document.getElementById('mRole').value = '';
     document.getElementById('mEmail').value = '';
+    document.getElementById('mPriority').value = 'Média';
     document.getElementById('mChannel').value = 'email';
-    document.getElementById('mDate').value = new Date().toISOString().slice(0,10);
     document.getElementById('mNextAction').value = '';
+    document.getElementById('mDate').value = new Date().toISOString().slice(0,10);
     document.getElementById('mNote').value = '';
     document.getElementById('mStage').textContent = 'listas';
     document.getElementById('mDelete').style.display = 'none';
@@ -329,16 +353,21 @@ function openModal(id){
 function closeModal(){ document.getElementById('modalBg').classList.remove('open'); editingId = null; }
 
 function saveItem(){
+  const objective = document.getElementById('mObjective').value;
+  const title = document.getElementById('mTitle').value.trim();
   const name = document.getElementById('mName').value.trim();
   const company = document.getElementById('mCompany').value.trim();
   const role = document.getElementById('mRole').value.trim();
   const email = document.getElementById('mEmail').value.trim();
+  const priority = document.getElementById('mPriority').value;
   const channel = document.getElementById('mChannel').value;
-  const date = document.getElementById('mDate').value;
   const nextAction = document.getElementById('mNextAction').value.trim();
+  const date = document.getElementById('mDate').value;
   const note = document.getElementById('mNote').value.trim();
   const stage = editingId ? (items.find(x=>x.id===editingId)?.stage || 'listas') : 'listas';
-  const payload = { name, company, role, email, channel, date, nextAction, note, stage };
+  const tier = objectiveTier(objective);
+  const subtype = objectiveSubtype(objective);
+  const payload = { objective, title, name, company, role, email, priority, channel, nextAction, date, note, stage, tier, subtype };
   if(editingId){ const idx = items.findIndex(x=>x.id===editingId); if(idx>=0) items[idx] = { ...items[idx], ...payload }; }
   else { items.push({ id: nextId++, ...payload }); }
   save(); closeModal(); render(); showToast('Disparo salvo');
@@ -359,6 +388,8 @@ document.getElementById('btnClearFilters').addEventListener('click', ()=>{
 
 const tierSet = new Set(items.map(i=>i.tier).filter(Boolean));
 const subtypeSet = new Set(items.map(i=>i.subtype).filter(Boolean));
+function objectiveTier(o){ return o==='vaga' ? '01 - Vaga_Contratacao' : o==='indicacao' ? '02 - Indicacao' : o==='recolocacao' ? '03 - Recrutamento' : o==='parceria' ? '06 - Parceria_Projeto' : o==='comercial' ? '07 - Comercial' : '04 - Networking'; }
+function objectiveSubtype(o){ return o==='vaga' ? 'Decisor técnico' : o==='indicacao' ? 'Indicação direta' : o==='recolocacao' ? 'Head hunter / Recrutador' : o==='parceria' ? 'Projeto / Parceria' : o==='comercial' ? 'Comercial' : 'Networking'; }
 function fillOptions(){
   const tierSel = document.getElementById('tierFilter');
   const curTier = tierSel.value;

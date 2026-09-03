@@ -146,10 +146,13 @@ select.status-sel{background:var(--panel2); border:1px solid var(--border); colo
     <div class="eyebrow">Flávio Guedes · Base de Contatos</div>
     <h1><span class="dot"></span>Prospecção · Command Center</h1>
     <div class="subtitle">Gestão de contatos, segmentação e preparação de disparos — apenas contatos com e-mail válido</div>
-    <div style="margin-top:12px; display:flex; gap:10px; flex-wrap:wrap;">
-      <button class="btn btn-primary" id="btnOpenKanbanTop" style="padding:12px 18px; font-size:14px; box-shadow:0 4px 20px rgba(109,91,255,.4);" onclick="window.location.href='kanban_disparos.html'">📋 Abrir Kanban de Disparos</button>
+    <div class="tabs" style="margin-top:14px; display:inline-flex; gap:8px; background:var(--bg3); padding:6px; border-radius:12px; border:1px solid var(--border);">
+      <button class="btn btn-primary" id="tabCRM" onclick="switchTab('crm')">📇 CRM</button>
+      <button class="btn btn-ghost" id="tabDisparos" onclick="switchTab('disparos')">📋 Kanban · Disparos</button>
     </div>
   </header>
+
+  <div id="crmSection">
 
   <div class="cards-grid" id="statsGrid"></div>
 
@@ -237,6 +240,7 @@ select.status-sel{background:var(--panel2); border:1px solid var(--border); colo
       <button class="btn btn-ghost" id="mCopySubject">Copiar assunto</button>
       <button class="btn btn-ghost" id="mCopyMessage">Copiar mensagem</button>
       <button class="btn btn-primary" id="mCopyKit">📦 Copiar kit completo</button>
+      <button class="btn btn-primary" id="mAddToKanban">📋 Adicionar no Kanban</button>
     </div>
     <button class="btn btn-primary" id="mSendEmail" style="width:100%; margin-top:8px; padding:12px;">✉️ Enviar e-mail agora</button>
     <div class="hint" id="mSendHint" style="margin-top:8px; margin-bottom:0;">Abre seu cliente de e-mail padrão com CCO, assunto e mensagem preenchidos.</div>
@@ -246,7 +250,7 @@ select.status-sel{background:var(--panel2); border:1px solid var(--border); colo
 <div class="toast" id="toast"></div>
 </div>
 
-
+  <div id="disparosSection" style="display:none;">
 <div class="section-title" style="margin-top:28px;" id="kanbanSection">Kanban · Ações por objetivo</div>
   <div class="board" id="board">
     <div class="column listas" data-col="listas">
@@ -1155,4 +1159,53 @@ function fillKanbanOptions(){
 
 fillKanbanOptions();
 render();
+
+function addContactToKanban(){
+  const it = window.__crmEditing || {};
+  if(!it.id){ showToast('Selecione um contato primeiro'); return; }
+  const kanbanItems = JSON.parse(localStorage.getItem('prospeccao_kanban_v1')||'[]');
+  const nextId = kanbanItems.reduce((m,i)=>Math.max(m,i.id),0)+1;
+  const payload = {
+    id: nextId,
+    objective: 'vaga',
+    title: it.nome || it.name || 'Contato',
+    name: it.nome || it.name || '',
+    company: it.empresa || it.company || '',
+    role: it.cargo || it.role || '',
+    email: it.email || '',
+    priority: it.prioridade || it.priority || 'Média',
+    nextAction: 'Follow inicial',
+    dueDate: '',
+    note: 'Importado do CRM',
+    followSuggestion: 'Follow inicial',
+    stage: 'listas',
+    tier: it.listaV2 || it.tier || '',
+    subtype: it.subtipo || it.subtype || '',
+    contactId: it.id
+  };
+  kanbanItems.push(payload);
+  localStorage.setItem('prospeccao_kanban_v1', JSON.stringify(kanbanItems));
+  switchTab('disparos');
+  render();
+  showToast('Contato adicionado ao Kanban');
+}
+
+function switchTab(tab){
+  const crm = document.getElementById('crmSection');
+  const disp = document.getElementById('disparosSection');
+  const tabCRM = document.getElementById('tabCRM');
+  const tabDisp = document.getElementById('tabDisparos');
+  if(tab==='crm'){
+    if(crm) crm.style.display = '';
+    if(disp) disp.style.display = 'none';
+    if(tabCRM){ tabCRM.className='btn btn-primary'; }
+    if(tabDisp){ tabDisp.className='btn btn-ghost'; }
+  } else {
+    if(crm) crm.style.display = 'none';
+    if(disp) disp.style.display = '';
+    if(tabCRM){ tabCRM.className='btn btn-ghost'; }
+    if(tabDisp){ tabDisp.className='btn btn-primary'; }
+    if(typeof render==='function') render();
+  }
+}
 </script>
